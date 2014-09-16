@@ -11,18 +11,18 @@ class HttpTransport
 
     public function query($url, $method = 'GET', $content = null)
     {
-        $http = [
+        $http = array(
             'method' => $method,
             'header' => "Content-Type: text/xml\r\n",
             'timeout' => 30,
             'ignore_errors' => true
-        ];
+        );
 
         if ($content != null) {
             $http['content'] = $content;
         }
 
-        $context = stream_context_create(['http' => $http]);
+        $context = stream_context_create(array('http' => $http));
 
         $result = @file_get_contents($url, false, $context);
         if ($result === false) {

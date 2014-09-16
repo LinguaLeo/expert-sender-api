@@ -30,15 +30,18 @@ EOD;
     public function getText()
     {
         if (!$this->column->hasValue()) {
-            return (new SimpleChunk('Column', $this->column->getName()))->getText();
+            $simpleChunk= new SimpleChunk('Column', $this->column->getName());
+            return $simpleChunk->getText();
         }
-        $text = [];
-        $text[] = (new SimpleChunk('Name', $this->column->getName()))->getText();
+        $text = array();
+        $simpleChunk1 = new SimpleChunk('Name', $this->column->getName());
+        $text[] = $simpleChunk1->getText();
         $value = $this->column->getValue();
         if ($value != strip_tags($value)) {
             $value = sprintf('<![CDATA[%s]]>', $value);
         }
-        $text[] = (new SimpleChunk('Value', $value))->getText();
+        $simpleChunk2 =(new SimpleChunk('Value', $value));
+        $text[] = $simpleChunk2->getText();
         return sprintf(self::PATTERN, implode(PHP_EOL, $text));
     }
 

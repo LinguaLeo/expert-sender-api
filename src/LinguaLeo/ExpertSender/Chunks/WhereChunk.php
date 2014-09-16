@@ -29,10 +29,13 @@ EOD;
      */
     public function getText()
     {
-        $text = [];
-        $text[] = (new SimpleChunk('ColumnName', $this->where->getColumnName()))->getText();
-        $text[] = (new SimpleChunk('Operator', $this->where->getOperator()))->getText();
-        $text[] = (new SimpleChunk('Value', $this->where->getValue()))->getText();
+        $text = array();
+        $sc1 = new SimpleChunk('ColumnName', $this->where->getColumnName());
+        $text[] = $sc1->getText();
+        $sc2 = new SimpleChunk('Operator', $this->where->getOperator());
+        $text[] = $sc2->getText();
+        $sc3 = new SimpleChunk('Value', $this->where->getValue());
+        $text[] = $sc3->getText();
         return sprintf(self::PATTERN, implode(PHP_EOL, $text));
     }
 

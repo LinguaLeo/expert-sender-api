@@ -22,7 +22,7 @@ EOD;
 
     public function getText()
     {
-        $textStrings = [];
+        $textStrings = array();
 
         if ($this->receiver->getId() != null) {
             $chunk = new SimpleChunk('Id', $this->receiver->getId());
@@ -31,6 +31,11 @@ EOD;
 
         if ($this->receiver->getEmail() != null) {
             $chunk = new SimpleChunk('Email', $this->receiver->getEmail());
+            $textStrings[] =  $chunk->getText();
+        }
+
+        if ($this->receiver->getListId() != null) {
+            $chunk = new SimpleChunk('ListId', $this->receiver->getListId());
             $textStrings[] =  $chunk->getText();
         }
 

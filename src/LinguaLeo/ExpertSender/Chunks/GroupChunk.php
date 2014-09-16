@@ -6,12 +6,12 @@ class GroupChunk implements ChunkInterface
 {
 
     /** @var ChunkInterface[] */
-    protected $chunks = [];
+    protected $chunks = array();
 
     /**
      * @param ChunkInterface[] $chunks
      */
-    public function __construct(array $chunks = [])
+    public function __construct(array $chunks = array())
     {
         $this->chunks = $chunks;
     }
@@ -29,7 +29,7 @@ class GroupChunk implements ChunkInterface
      */
     public function getText()
     {
-        $text = [];
+        $text = array();
         foreach ($this->chunks as $chunk) {
             $text[] = $chunk->getText();
         }
