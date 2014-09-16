@@ -17,7 +17,7 @@ EOD;
      * @param mixed $xsiType
      * @param array $chunksArray
      */
-    public function __construct($xsiType = null, array $chunksArray = [])
+    public function __construct($xsiType = null, array $chunksArray = array())
     {
         parent::__construct($chunksArray);
         $this->xsiType = $xsiType;

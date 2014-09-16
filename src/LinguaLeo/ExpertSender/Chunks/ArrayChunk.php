@@ -6,12 +6,12 @@ abstract class ArrayChunk implements ChunkInterface
 {
 
     /** @var array */
-    protected $chunks = [];
+    protected $chunks = array();
 
     /**
      * @param ChunkInterface[] $chunksArray
      */
-    public function __construct(array $chunksArray = [])
+    public function __construct(array $chunksArray = array())
     {
         $this->chunks = $chunksArray;
     }
@@ -29,7 +29,7 @@ abstract class ArrayChunk implements ChunkInterface
      */
     protected function getSubChunksText()
     {
-        $texts = [];
+        $texts = array();
         foreach ($this->chunks as $columnChunk) {
             /** @var ChunkInterface $columnChunk */
             $texts[] = $columnChunk->getText();

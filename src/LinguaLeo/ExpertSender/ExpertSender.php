@@ -20,6 +20,7 @@ use LinguaLeo\ExpertSender\Chunks\SnippetsChunk;
 use LinguaLeo\ExpertSender\Chunks\WhereChunk;
 use LinguaLeo\ExpertSender\Chunks\WhereConditionsChunk;
 use LinguaLeo\ExpertSender\Entities\Column;
+use LinguaLeo\ExpertSender\Entities\Receiver;
 use LinguaLeo\ExpertSender\Results\TableDataResult;
 use LinguaLeo\ExpertSender\Results\UserIdResult;
 use Psr\Log\LoggerInterface;
@@ -30,8 +31,6 @@ class ExpertSender
 
     /** @var HttpTransport */
     protected $transport;
-    /** @var LoggerInterface */
-    protected $logger;
 
     protected $endpointUrl;
     protected $subscribersUrl;
@@ -45,9 +44,8 @@ class ExpertSender
      * @param $endpointUrl - url without /Api
      * @param $apiKey
      * @param $transport
-     * @param \Psr\Log\LoggerInterface $logger
      */
-    public function __construct($endpointUrl, $apiKey, $transport = null, LoggerInterface $logger = null)
+    public function __construct($endpointUrl, $apiKey, $transport = null)
     {
         if ($endpointUrl[strlen($endpointUrl) - 1] != '/') {
             $endpointUrl .= '/';
@@ -67,7 +65,6 @@ class ExpertSender
         $this->getTableDataUrl = $this->endpointUrl . 'DataTablesGetData';
         $this->apiKey = $apiKey;
         $this->transport = $transport;
-        $this->logger = $logger;
     }
 
     /**
@@ -81,47 +78,8 @@ class ExpertSender
      * @return ApiResult
      * @throws \BadMethodCallException
      */
-    public function addUserToList(
-        $email = null,
-        $listId = null,
-        array $properties = array(),
-        $firstName = null,
-        $lastName = null,
-        $mode = ExpertSenderEnum::MODE_ADD_AND_UPDATE,
-        $id = null,
-        $ip = null
-    ) {
-        $args = func_get_args();
-
-        if (isset($args[0]) && $args[0] instanceof Request\AddUserToList) {
-            if (count($args) > 1) {
-                throw new \BadMethodCallException();
-            }
-
-            $request = $args[0];
-        } else {
-            if ($this->logger) {
-                $this->logger->warning(sprintf(
-                    'Deprecated passing many arguments to %s. Use %s object instead.',
-                    'ExpertSender->addUserToList()',
-                    'Request\AddUserToList'
-                ));
-            }
-
-            $request = (new Request\AddUserToList())
-                ->setEmail($email)
-                ->setListId($listId)
-                ->setProperties($properties)
-                ->setFirstName($firstName)
-                ->setLastName($lastName)
-                ->setMode($mode)
-                ->setId($id)
-                ->setIp($ip);
-        }
-
-        // we're going to use it, so we don't want it to be changeable anymore
-        // (mutable object -> value object)
-        // plus it gets validated for required fields
+    public function addUserToList($request )
+    {
         $request->freeze();
 
         $headerChunk = $this->getAddUserToListHeaderChunk($request);
@@ -179,13 +137,13 @@ class ExpertSender
     {
         $tableNameChunk = new SimpleChunk('TableName', $tableName);
         $dataChunk = new DataChunk();
-        $columnsChunks = [];
+        $columnsChunks = array();
         foreach ($columns as $column) {
             $columnsChunks[] = new ColumnChunk($column);
         }
         $columnsChunk = new ColumnsChunk($columnsChunks);
         $dataChunk->addChunk($columnsChunk);
-        $groupChunk = new GroupChunk([$tableNameChunk, $dataChunk]);
+        $groupChunk = new GroupChunk(array($tableNameChunk, $dataChunk));
         $headerChunk = $this->getHeaderChunk($groupChunk);
 
         $response = $this->transport->post($this->addTableRowUrl, $headerChunk->getText());
@@ -204,13 +162,13 @@ class ExpertSender
      */
     public function getTableData(
         $tableName,
-        array $columns = [],
-        array $where = [],
-        array $orderBy = [],
+        array $columns = array(),
+        array $where = array(),
+        array $orderBy = array(),
         $limit = null
     ) {
         $tableNameChunk = new SimpleChunk('TableName', $tableName);
-        $columnsChunks = $whereChunks = $orderByChunks = [];
+        $columnsChunks = $whereChunks = $orderByChunks = array();
         foreach ($columns as $column) {
             $columnsChunks[] = new ColumnChunk($column);
         }
@@ -220,7 +178,7 @@ class ExpertSender
         foreach ($orderBy as $direction) {
             $orderByChunks[] = new OrderByChunk($direction);
         }
-        $groupChunk = new GroupChunk([$tableNameChunk]);
+        $groupChunk = new GroupChunk(array($tableNameChunk));
         if ($columnsChunks) {
             $groupChunk->addChunk(new ColumnsChunk($columnsChunks));
         }
@@ -251,7 +209,7 @@ class ExpertSender
     public function updateTableRow($tableName, array $primaryKeyColumns, array $columns)
     {
         $tableNameChunk = new SimpleChunk('TableName', $tableName);
-        $primaryKeysColumnsChunks = $columnsChunks = [];
+        $primaryKeysColumnsChunks = $columnsChunks = array();
         foreach ($primaryKeyColumns as $column) {
             $primaryKeysColumnsChunks[] = new ColumnChunk($column);
         }
@@ -260,7 +218,7 @@ class ExpertSender
         }
         $primaryKeyColumnsChunk = new PrimaryKeyColumnsChunk($primaryKeysColumnsChunks);
         $columnsChunk = new ColumnsChunk($columnsChunks);
-        $groupChunk = new GroupChunk([$tableNameChunk, $primaryKeyColumnsChunk, $columnsChunk]);
+        $groupChunk = new GroupChunk(array($tableNameChunk, $primaryKeyColumnsChunk, $columnsChunk));
         $headerChunk = $this->getHeaderChunk($groupChunk);
 
         $response = $this->transport->post($this->updateTableRowUrl, $headerChunk->getText());
@@ -277,12 +235,12 @@ class ExpertSender
     public function deleteTableRow($tableName, array $primaryKeyColumns)
     {
         $tableNameChunk = new SimpleChunk('TableName', $tableName);
-        $primaryKeysColumnsChunks = [];
+        $primaryKeysColumnsChunks = array();
         foreach ($primaryKeyColumns as $column) {
             $primaryKeysColumnsChunks[] = new ColumnChunk($column);
         }
         $primaryKeyColumnsChunk = new PrimaryKeyColumnsChunk($primaryKeysColumnsChunks);
-        $groupChunk = new GroupChunk([$tableNameChunk, $primaryKeyColumnsChunk]);
+        $groupChunk = new GroupChunk(array($tableNameChunk, $primaryKeyColumnsChunk));
         $headerChunk = $this->getHeaderChunk($groupChunk);
 
         $response = $this->transport->post($this->deleteTableRowUrl, $headerChunk->getText());
@@ -301,7 +259,8 @@ class ExpertSender
     {
         $result = $this->getUserId($from);
 
-        $request = (new Request\AddUserToList())
+        $request = new Request\AddUserToList();
+        $request
             ->setMode(ExpertSenderEnum::MODE_ADD_AND_UPDATE)
             ->setId($result->getId())
             ->setListId($listId)
@@ -322,7 +281,7 @@ class ExpertSender
      */
     public function sendTrigger($triggerId, $receivers)
     {
-        $receiverChunks = [];
+        $receiverChunks = array();
         foreach($receivers as $receiver) {
             $receiverChunks[] = new ReceiverChunk($receiver);
         }
@@ -346,9 +305,9 @@ class ExpertSender
      * @param $snippets
      * @return \LinguaLeo\ExpertSender\ApiResult
      */
-    public function sendTransactional($transactionId, $receiver, $snippets)
+    public function sendTransactional($transactionId, Receiver $receiver, $snippets = array())
     {
-        $snippetChunks = [];
+        $snippetChunks = array();
         foreach($snippets as $snippet) {
             $snippetChunks[] = new SnippetChunk($snippet);
         }
@@ -435,7 +394,7 @@ class ExpertSender
      */
     protected function getBaseData()
     {
-        return ['apiKey' => $this->apiKey];
+        return array('apiKey' => $this->apiKey);
     }
 
     /**

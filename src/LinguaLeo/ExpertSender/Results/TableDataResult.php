@@ -8,7 +8,7 @@ class TableDataResult extends ApiResult
 {
 
     /** @var array */
-    protected $data = [];
+    protected $data = array();
 
     /**
      * @param \LinguaLeo\ExpertSender\ExpertSenderResponse $response

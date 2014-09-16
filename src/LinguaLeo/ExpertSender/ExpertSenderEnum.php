@@ -28,7 +28,7 @@ class ExpertSenderEnum
      */
     public static function getTypes()
     {
-        return [self::TYPE_BOOLEAN, self::TYPE_STRING, self::TYPE_INTEGER, self::TYPE_DATE, self::TYPE_DATE_TIME];
+        return array(self::TYPE_BOOLEAN, self::TYPE_STRING, self::TYPE_INTEGER, self::TYPE_DATE, self::TYPE_DATE_TIME);
     }
 
     /**
@@ -36,7 +36,7 @@ class ExpertSenderEnum
      */
     public static function getOperators()
     {
-        return [self::OPERATOR_EQUALS, self::OPERATOR_GREATER, self::OPERATOR_LOWER, self::OPERATOR_LIKE];
+        return array(self::OPERATOR_EQUALS, self::OPERATOR_GREATER, self::OPERATOR_LOWER, self::OPERATOR_LIKE);
     }
 
     /**
@@ -44,7 +44,7 @@ class ExpertSenderEnum
      */
     public static function getOrders()
     {
-        return [self::ORDER_ASCENDING, self::ORDER_DESCENDING];
+        return array(self::ORDER_ASCENDING, self::ORDER_DESCENDING);
     }
 
     /**
@@ -52,12 +52,12 @@ class ExpertSenderEnum
      */
     public static function getModes()
     {
-        return [
+        return array(
             self::MODE_ADD_AND_UPDATE,
             self::MODE_ADD_AND_REPLACE,
             self::MODE_ADD_AND_IGNORE,
             self::MODE_IGNORE_AND_UPDATE,
             self::MODE_IGNORE_AND_REPLACE,
-        ];
+        );
     }
 }

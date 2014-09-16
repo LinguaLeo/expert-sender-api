@@ -76,7 +76,7 @@ class AddUserToList
     /**
      * @var array
      */
-    private $properties = [];
+    private $properties = array();
 
     /**
      * @return boolean
@@ -389,7 +389,7 @@ class AddUserToList
     {
         $this->exceptionIfFrozen();
 
-        $this->properties = [];
+        $this->properties = array();
 
         foreach ($properties as $property) {
             $this->addProperty($property);

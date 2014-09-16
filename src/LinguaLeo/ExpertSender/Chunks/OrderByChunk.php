@@ -29,9 +29,11 @@ EOD;
      */
     public function getText()
     {
-        $text = [];
-        $text[] = (new SimpleChunk('Column', $this->orderBy->getColumnName()))->getText();
-        $text[] = (new SimpleChunk('Direction', $this->orderBy->getDirection()))->getText();
+        $text = array();
+        $sc = new SimpleChunk('Column', $this->orderBy->getColumnName());
+        $text[] = $sc->getText();
+        $sc2 = new SimpleChunk('Direction', $this->orderBy->getDirection());
+        $text[] = $sc2->getText();
         return sprintf(self::PATTERN, implode(PHP_EOL, $text));
     }
 
