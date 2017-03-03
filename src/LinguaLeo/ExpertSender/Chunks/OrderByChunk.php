@@ -30,7 +30,7 @@ EOD;
     public function getText()
     {
         $text = [];
-        $text[] = (new SimpleChunk('Column', $this->orderBy->getColumnName()))->getText();
+        $text[] = (new SimpleChunk('ColumnName', $this->orderBy->getColumnName()))->getText();
         $text[] = (new SimpleChunk('Direction', $this->orderBy->getDirection()))->getText();
         return sprintf(self::PATTERN, implode(PHP_EOL, $text));
     }
