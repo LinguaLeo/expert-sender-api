@@ -14,7 +14,7 @@ $request = new AddUserToList();
 $request
     ->setEmail('my@email.com')
     ->setListId(1000)
-    ->setFirstName('my name');
+    ->setFirstName('my name')
     ->addProperty($customProperty)
     ->freeze();
 
